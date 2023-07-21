@@ -5,13 +5,12 @@
 
 #pragma once
 
-
 #include <stdio.h>
-#ifdef WIN32		// Windows defs
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+#ifdef WIN32                // Windows defs
+#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 #include <tchar.h>
 
-#else				// linux / OSX defs
+#else // linux / OSX defs
 #include <stdlib.h>
 #include <fcntl.h>
 #include <math.h>
@@ -29,7 +28,7 @@
 #include <sys/timeb.h>
 
 #ifdef LINUX
-#include <linux/ioctl.h>
+// #include <linux/ioctl.h>
 #endif
 
 #include <time.h>
@@ -53,18 +52,18 @@ typedef long long INT64;
 typedef unsigned long long UINT64;
 
 typedef int PT_FILEHANDLE;
-typedef void * DLL_HANDLE;
+typedef void *DLL_HANDLE;
 
 typedef unsigned long DWORD;
-typedef unsigned long* LPDWORD;
-typedef void* LPOVERLAPPED;
-typedef void* OVERLAPPED;
-typedef void* LPVOID;
-typedef void* PVOID;
+typedef unsigned long *LPDWORD;
+typedef void *LPOVERLAPPED;
+typedef void *OVERLAPPED;
+typedef void *LPVOID;
+typedef void *PVOID;
 typedef void VOID;
 typedef int HANDLE; // note that handle here is assumed to be
 // a pointer to a file decriptor
-typedef int* PHANDLE;
+typedef int *PHANDLE;
 typedef int BOOL;
 
 typedef unsigned long UINT32;
@@ -89,8 +88,6 @@ typedef unsigned char BYTE;
 #define _stscanf sscanf
 #define _stprintf sprintf
 #define _tprintf printf
-
-
 
 /* common constants */
 #define SUCCESS 0
@@ -117,7 +114,7 @@ typedef unsigned char BYTE;
 #endif
 
 /** sleep for x milliseconds */
-inline void nap(unsigned long msec) { usleep(msec*1000); }
+inline void nap(unsigned long msec) { usleep(msec * 1000); }
 
 #define Sleep sleep
 
@@ -125,6 +122,6 @@ typedef double VWTIME;
 /** returns the amount of time in seconds since some arbitrary moment. */
 inline VWTIME VWGetTime() { return 0.0; }
 
-#endif  // end linux defs
+#endif // end linux defs
 
 // TODO: reference additional headers your program requires here

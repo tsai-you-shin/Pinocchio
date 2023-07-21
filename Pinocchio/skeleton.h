@@ -22,57 +22,63 @@
 #include <map>
 #include "graphutils.h"
 
-class PINOCCHIO_API Skeleton {
+class PINOCCHIO_API Skeleton
+{
 public:
     Skeleton() {}
-    
+
     const PtGraph &fGraph() const { return fGraphV; }
     const vector<int> &fPrev() const { return fPrevV; }
     const vector<int> &fSym() const { return fSymV; }
-    
+
     const PtGraph &cGraph() const { return cGraphV; }
     const vector<int> &cPrev() const { return cPrevV; }
     const vector<int> &cSym() const { return cSymV; }
     const vector<bool> &cFeet() const { return cFeetV; }
     const vector<bool> &cFat() const { return cFatV; }
-    
+
     const vector<int> &cfMap() const { return cfMapV; }
     const vector<int> &fcMap() const { return fcMapV; }
     const vector<double> &fcFraction() const { return fcFractionV; }
     const vector<double> &cLength() const { return cLengthV; }
 
-    int getJointForName(const std::string &name) const { if(jointNames.count(name)) return jointNames.find(name)->second; return -1; }
-    
+    int getJointForName(const std::string &name) const
+    {
+        if (jointNames.count(name))
+            return jointNames.find(name)->second;
+        return -1;
+    }
+
     void scale(double factor);
-    
+
 protected:
     void initCompressed();
-    
-    //help for creation
+
+    // help for creation
     map<string, int> jointNames;
     void makeJoint(const string &name, const Vector3 &pos, const string &previous = string());
     void makeSymmetric(const string &name1, const string &name2);
     void setFoot(const string &name);
     void setFat(const string &name);
-    
+
 private:
-     //full
+    // full
     PtGraph fGraphV;
-    vector<int> fPrevV; //previous vertices
-    vector<int> fSymV; //symmetry
-    
-    //compressed (no degree 2 vertices)
-    PtGraph cGraphV; 
-    vector<int> cPrevV; //previous vertices
-    vector<int> cSymV; //symmetry
-    vector<bool> cFeetV; //whether the vertex should be near the ground
-    vector<bool> cFatV; //whether the vertex should be in a large region
-    
-    vector<int> cfMapV; //compressed to full map
-    vector<int> fcMapV; //full to compressed map, -1 when vertex is not in compressed
-    vector<double> fcFractionV; //maps full vertex number to ratio of its prev edge length to total length of
-                                //containing edge in the compressed graph
-    vector<double> cLengthV; //lengths of the compressed bones
+    vector<int> fPrevV; // previous vertices
+    vector<int> fSymV;  // symmetry
+
+    // compressed (no degree 2 vertices)
+    PtGraph cGraphV;
+    vector<int> cPrevV;  // previous vertices
+    vector<int> cSymV;   // symmetry
+    vector<bool> cFeetV; // whether the vertex should be near the ground
+    vector<bool> cFatV;  // whether the vertex should be in a large region
+
+    vector<int> cfMapV;         // compressed to full map
+    vector<int> fcMapV;         // full to compressed map, -1 when vertex is not in compressed
+    vector<double> fcFractionV; // maps full vertex number to ratio of its prev edge length to total length of
+                                // containing edge in the compressed graph
+    vector<double> cLengthV;    // lengths of the compressed bones
 };
 
 class PINOCCHIO_API HumanSkeleton : public Skeleton
@@ -103,6 +109,6 @@ class PINOCCHIO_API FileSkeleton : public Skeleton
 {
 public:
     FileSkeleton(const std::string &filename);
-}; 
+};
 
 #endif

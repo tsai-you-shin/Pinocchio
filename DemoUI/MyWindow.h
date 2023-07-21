@@ -32,7 +32,7 @@ struct LineSegment
 {
     LineSegment() : thickness(1.) {}
     LineSegment(const Vector3 &inP1, const Vector3 &inP2,
-        const Vector3 &inColor = Vector3(1, 1, 1), double inThickness = 1.)
+                const Vector3 &inColor = Vector3(1, 1, 1), double inThickness = 1.)
         : p1(inP1), p2(inP2), color(inColor), thickness(inThickness) {}
 
     Vector3 p1, p2, color;
@@ -64,4 +64,4 @@ private:
     void drawFloor();
 };
 
-#endif //MYWINDOW_H
+#endif // MYWINDOW_H

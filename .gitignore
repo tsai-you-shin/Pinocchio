@@ -34,3 +34,6 @@ AttachWeights/AttachWeights
 AttachWeights/AttachWeights.exe
 AttachWeights/AttachWeightsMac
 AttachWeights/AttachWeightsLinux
+DemoUI/DemoUI
+AnimalUI/animalUI
+.vscode/settings.json
