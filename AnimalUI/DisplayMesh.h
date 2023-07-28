@@ -24,6 +24,7 @@ THE SOFTWARE.
 #define DISPLAYMESH_H
 
 #include "../Pinocchio/mesh.h"
+#include "../Pinocchio/skeleton.h"
 
 class DisplayMesh
 {
@@ -32,6 +33,7 @@ public:
 
     virtual const Mesh &getMesh() = 0;
     virtual vector<Vector3> getSkel() const { return vector<Vector3>(); }
+    Skeleton skel = HumanSkeleton();
 };
 
 class StaticDisplayMesh : public DisplayMesh

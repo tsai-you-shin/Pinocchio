@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "../Pinocchio/attachment.h"
 #include "../Pinocchio/pinocchioApi.h"
 #include "defmesh.h"
-#include "motion.h"
 #include "animalSkeleton.h"
 
 struct ArgData
@@ -55,8 +54,6 @@ void printUsageAndExit()
 {
     cout << "Usage: DemoUI filename.{obj | ply | off | gts | stl}" << endl;
     cout << "              [-skel skelname]" << endl;
-    cout << "              [-motion motionname]" << endl;
-
     exit(0);
 }
 
@@ -73,7 +70,6 @@ ArgData processArgs(const vector<string> &args)
     while (cur < num)
     {
         string curStr = args[cur++];
-        std::cout << curStr << std::endl;
         if (curStr == string("-skel"))
         {
             if (cur == num)
@@ -84,40 +80,11 @@ ArgData processArgs(const vector<string> &args)
             curStr = args[cur++];
             out.skeletonfilename = curStr;
             out.skeleton = AnimalSkeleton(out.skeletonfilename);
-            // out.skeleton = FileSkeleton(out.skeletonfilename);
-            // out.skeleton = HorseSkeleton();
-            continue;
-        }
-        if (curStr == string("-rot"))
-        {
-            if (cur + 3 >= num)
-            {
-                cout << "Too few rotation arguments; exiting." << endl;
-                printUsageAndExit();
-            }
-            double x, y, z, deg;
-            sscanf(args[cur++].c_str(), "%lf", &x);
-            sscanf(args[cur++].c_str(), "%lf", &y);
-            sscanf(args[cur++].c_str(), "%lf", &z);
-            sscanf(args[cur++].c_str(), "%lf", &deg);
-
-            out.meshTransform = Quaternion<>(Vector3(x, y, z), deg * M_PI / 180.) * out.meshTransform;
-            continue;
-        }
-        if (curStr == string("-motion"))
-        {
-            if (cur == num)
-            {
-                cout << "No motion filename specified; ignoring." << endl;
-                continue;
-            }
-            out.motionname = args[cur++];
             continue;
         }
         cout << "Unrecognized option: " << curStr << endl;
         printUsageAndExit();
     }
-
     return out;
 }
 
@@ -142,26 +109,10 @@ void process(const vector<string> &args, MyWindow *w)
     m.computeVertexNormals();
 
     Skeleton given = a.skeleton;
-    given.scale(a.skelScale * 1.0);
 
-    a.stopAtMesh = true;
     if (a.stopAtMesh)
     { // if early bailout
         w->addMesh(new StaticDisplayMesh(m));
-    }
-
-    for (int i = 0; i < given.fGraph().verts.size(); i++)
-    {
-        vector<int> verts = given.fGraph().edges[i];
-        for (int j = 0; j < verts.size(); j++)
-        {
-            if (verts[j] > i)
-            {
-                std::cout << i << ":" << given.fGraph().verts[i] << " " << verts[j] << ":" << given.fGraph().verts[verts[j]] << std::endl;
-                w->addLine(LineSegment(given.fGraph().verts[i], given.fGraph().verts[verts[j]], Vector3(.5, .5, 0), 4.));
-            }
-        }
-        w->addPoint(given.fGraph().verts[i]);
     }
 
     PinocchioOutput o;
@@ -173,41 +124,31 @@ void process(const vector<string> &args, MyWindow *w)
         exit(0);
     }
 
-    if (a.motionname.size() > 0)
-    {
-        w->addMesh(new DefMesh(m, given, o.embedding, *(o.attachment), new Motion(a.motionname)));
-    }
-    else
-    {
-        w->addMesh(new StaticDisplayMesh(m));
+    // Display Mesh
+    w->addMesh(new DefMesh(m, given, o.embedding, *(o.attachment)), &given);
+    
 
-        for (i = 1; i < (int)o.embedding.size(); ++i)
+    // Output skeleton embedding
+    for (i = 0; i < (int)o.embedding.size(); ++i)
+        o.embedding[i] = (o.embedding[i] - m.toAdd) / m.scale;
+    ofstream os("./data/skeleton.out");
+    for (i = 0; i < (int)o.embedding.size(); ++i)
+    {
+        os << i << " " << o.embedding[i][0] << " " << o.embedding[i][1] << " " << o.embedding[i][2] << " " << a.skeleton.fPrev()[i] << endl;
+    }
+
+    // Output attachment
+    std::ofstream astrm("./data/attachment.out");
+    for (i = 0; i < (int)m.vertices.size(); ++i)
+    {
+        Vector<double, -1> v = o.attachment->getWeights(i);
+        for (int j = 0; j < v.size(); ++j)
         {
-            w->addLine(LineSegment(o.embedding[i], o.embedding[given.fPrev()[i]], Vector3(.5, .5, 0), 4.));
+            double d = floor(0.5 + v[j] * 10000.) / 10000.;
+            astrm << d << " ";
         }
+        astrm << endl;
     }
 
-    // // output skeleton embedding
-    // for (i = 0; i < (int)o.embedding.size(); ++i)
-    //     o.embedding[i] = (o.embedding[i] - m.toAdd) / m.scale;
-    // ofstream os("./data/skeleton.out");
-    // for (i = 0; i < (int)o.embedding.size(); ++i)
-    // {
-    //     os << i << " " << o.embedding[i][0] << " " << o.embedding[i][1] << " " << o.embedding[i][2] << " " << a.skeleton.fPrev()[i] << endl;
-    // }
-
-    // // output attachment
-    // std::ofstream astrm("./data/attachment.out");
-    // for (i = 0; i < (int)m.vertices.size(); ++i)
-    // {
-    //     Vector<double, -1> v = o.attachment->getWeights(i);
-    //     for (int j = 0; j < v.size(); ++j)
-    //     {
-    //         double d = floor(0.5 + v[j] * 10000.) / 10000.;
-    //         astrm << d << " ";
-    //     }
-    //     astrm << endl;
-    // }
-
-    // delete o.attachment;
+    delete o.attachment;
 }

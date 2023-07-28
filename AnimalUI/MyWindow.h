@@ -48,7 +48,7 @@ public:
     virtual void draw();
     virtual int handle(int);
 
-    void addMesh(DisplayMesh *inM) { meshes.push_back(inM); }
+    void addMesh(DisplayMesh *inM, Skeleton *skel = NULL) { inM->skel = *skel; meshes.push_back(inM); }
     void addLine(const LineSegment &l) { lines.push_back(l); }
     void addPoint(const Vector3 &point) { points.push_back(point); }
     void clearLines() { lines.clear(); }

@@ -52,7 +52,6 @@ public:
     const Mesh &getMesh() { updateMesh(); return curMesh; }
 
 private:
-    double getLegRatio() const;
     vector<Transform<> > computeTransforms() const;
     void updateMesh() const;
 

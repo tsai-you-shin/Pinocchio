@@ -61,7 +61,7 @@ int MyWindow::handle(int event)
             int dx = Fl::event_x() - prevX, dy = Fl::event_y() - prevY;
             double len = sqrt(double(SQR(dx) + SQR(dy))) * 0.01;
             Transform<> cur = Transform<>(Vector3(0.5, 0.5, 0.5)) *
-                              Transform<>(Quaternion<>(Vector3(dy, dx, 0), len)) *
+                              Transform<>(Quaternion<>(Vector3(SIGN(dy), SIGN(dx), 0), len)) *
                               Transform<>(Vector3(-0.5, -0.5, -0.5));
 
             transform = cur * transform;
@@ -245,11 +245,12 @@ void MyWindow::draw()
         for (i = 0; i < (int)meshes.size(); ++i)
         {
             vector<Vector3> v = meshes[i]->getSkel();
+            Skeleton s = meshes[i]->skel;
             if (v.size() == 0)
                 continue;
             glColor3d(.5, 0, 0);
 
-            const vector<int> &prev = human.fPrev();
+            const vector<int> &prev = s.fPrev();
             glBegin(GL_LINES);
             for (int j = 1; j < (int)prev.size(); ++j)
             {
